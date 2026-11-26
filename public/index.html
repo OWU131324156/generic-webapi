@@ -3,42 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>アプリ一覧</title>
-    <style>
-        body { font-family: sans-serif; max-width: 640px; margin: 40px auto; padding: 0 16px; color: #333; }
-        h1 { font-size: 1.4rem; }
-        ul { list-style: none; padding: 0; }
-        li { padding: 12px 0; border-bottom: 1px solid #eee; }
-        a { font-size: 1.1rem; text-decoration: none; color: #0366d6; }
-    </style>
+    <meta name="theme-color" content="#edf5fb">
+    <title>AI旅行プランメーカー</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>アプリ一覧</h1>
-    <ul id="appList"></ul>
+    <main class="container">
+        <header class="hero">
+            <div class="hero-copy-block">
+                <div class="brand-lockup">
+                    <span class="brand-mark" aria-hidden="true">✳</span>
+                    <span class="brand-name">TABINO <span>TRAVEL NOTES</span></span>
+                </div>
+                <p class="eyebrow">YOUR NEXT ADVENTURE</p>
+                <h1>旅のはじまりを、<br><span>あなたらしく。</span></h1>
+                <p class="hero-copy">行きたい場所と好きなことを教えてください。<br class="desktop-break">あなただけの旅の過ごし方を提案します。</p>
+            </div>
+            <figure class="hero-art" aria-hidden="true">
+                <svg viewBox="0 0 420 290" role="presentation" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+                            <stop stop-color="#b9e5ec" />
+                            <stop offset="1" stop-color="#a8b6e3" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="420" height="290" rx="28" fill="url(#sky)" />
+                    <circle cx="302" cy="81" r="38" fill="#fff1c7" />
+                    <path d="M0 186 102 94l83 76 74-61 161 124v57H0z" fill="#8fc5ba" />
+                    <path d="m0 218 111-68 93 63 99-81 117 84v74H0z" fill="#547f8e" />
+                    <path d="M-8 256c82-54 127-42 193-6 58 31 116 27 242-44" fill="none" stroke="#e7f2d5" stroke-linecap="round" stroke-width="5" stroke-dasharray="2 13" />
+                    <path d="M0 270c92-34 153-18 218 2 68 21 135 1 202-31v49H0z" fill="#3c687c" opacity=".72" />
+                    <path d="M78 177c0-14 11-25 25-25s25 11 25 25" fill="none" stroke="#fff1c7" stroke-linecap="round" stroke-width="4" opacity=".8" />
+                </svg>
+                <span class="art-caption"><span>01</span> FIND YOUR WAY</span>
+                <span class="art-stamp">旅を<br>描こう</span>
+            </figure>
+        </header>
+
+        <section class="planner-panel" aria-labelledby="form-title">
+            <div class="section-heading">
+                <span class="step-badge">01</span>
+                <div>
+                    <h2 id="form-title">旅の条件を入力</h2>
+                    <p>まだ決まっていないことは、あとから変更できます。</p>
+                </div>
+            </div>
+
+            <form id="tripForm">
+                <div class="form-group">
+                    <label for="destination">旅行先 <span class="required">必須</span></label>
+                    <input id="destination" name="destination" type="text" placeholder="例：京都、北海道、台湾" autocomplete="off" required maxlength="100">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="days">旅行日数</label>
+                        <select id="days" name="days" required>
+                            <option value="1">1日</option>
+                            <option value="2" selected>2日</option>
+                            <option value="3">3日</option>
+                            <option value="4">4日</option>
+                            <option value="5">5日</option>
+                            <option value="6">6日</option>
+                            <option value="7">7日</option>
+                            <option value="8">8日</option>
+                            <option value="9">9日</option>
+                            <option value="10">10日</option>
+                            <option value="11">11日</option>
+                            <option value="12">12日</option>
+                            <option value="13">13日</option>
+                            <option value="14">14日</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="budget">予算 <span class="required">必須</span></label>
+                        <div class="input-with-unit">
+                            <input id="budget" name="budget" type="number" min="1000" step="1000" placeholder="例：50000" required inputmode="numeric">
+                            <span>円</span>
+                        </div>
+                        <small>1人あたりの旅行全体の予算</small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="interests">旅行で楽しみたいこと <span class="optional">任意</span></label>
+                    <textarea id="interests" name="interests" rows="3" placeholder="例：温泉、地元グルメ、自然の中を散歩、歴史ある街並み"></textarea>
+                    <small>複数ある場合は、読点や改行で区切ってください。</small>
+                </div>
+
+                <button class="btn" id="submitButton" type="submit">
+                    <span>旅行プランを作成する</span>
+                    <span class="button-arrow" aria-hidden="true">→</span>
+                </button>
+            </form>
+        </section>
+
+        <p class="loading" id="loading" role="status" aria-live="polite">
+            <span class="loading-dot" aria-hidden="true"></span>
+            条件に合わせて旅のプランを考えています…
+        </p>
+        <p class="error-message" id="errorMessage" role="alert" hidden></p>
+
+        <section class="results" id="results" aria-labelledby="results-title" hidden>
+            <div class="section-heading result-heading">
+                <span class="step-badge">02</span>
+                <div>
+                    <p class="eyebrow">MADE FOR YOUR TRIP</p>
+                    <h2 id="results-title">あなたの旅行プラン</h2>
+                    <p id="tripSummary" class="trip-summary"></p>
+                </div>
+            </div>
+            <div class="itinerary" id="itinerary"></div>
+            <button class="text-button" id="editButton" type="button">条件を変更して作り直す <span aria-hidden="true">↑</span></button>
+        </section>
+
+        <footer>旅のアイデアを、あなたらしく。</footer>
+    </main>
 
     <script>
-        // サーバーから .html ファイルの一覧を取得してリンクを表示する
-        async function loadPages() {
-            const response = await fetch('/api/pages');
-            const files = await response.json();
+        const form = document.getElementById('tripForm');
+        const submitButton = document.getElementById('submitButton');
+        const loading = document.getElementById('loading');
+        const errorMessage = document.getElementById('errorMessage');
+        const results = document.getElementById('results');
+        const itinerary = document.getElementById('itinerary');
 
-            const list = document.getElementById('appList');
-            if (files.length === 0) {
-                list.innerHTML = '<li>public/ に .html ファイルがありません。</li>';
+        form.addEventListener('submit', createTripPlan);
+        document.getElementById('editButton').addEventListener('click', () => {
+            document.getElementById('destination').focus();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        async function createTripPlan(event) {
+            event.preventDefault();
+            if (!form.reportValidity()) return;
+
+            const formData = new FormData(form);
+            const destination = formData.get('destination').trim();
+            const days = Number(formData.get('days'));
+            const budget = Number(formData.get('budget'));
+            const interests = formData.get('interests').trim() || '特に指定なし。旅行先の定番や魅力をバランスよく楽しみたい';
+
+            if (!destination || !Number.isFinite(budget) || budget < 1000) {
+                errorMessage.textContent = '旅行先と、1,000円以上の予算を入力してください。';
+                errorMessage.hidden = false;
                 return;
             }
 
-            files.forEach(name => {
-                const li = document.createElement('li');
-                const a = document.createElement('a');
-                a.href = name;
-                a.textContent = name;
-                li.appendChild(a);
-                list.appendChild(li);
-            });
+            errorMessage.hidden = true;
+            results.hidden = true;
+            loading.classList.add('show');
+            submitButton.disabled = true;
+
+            try {
+                const response = await fetch('/api/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: 'AI旅行プランメーカー',
+                        destination,
+                        days,
+                        budget,
+                        interests
+                    })
+                });
+
+                const responseText = await response.text();
+                let payload;
+                try {
+                    payload = JSON.parse(responseText);
+                } catch (parseError) {
+                    throw new Error('応答を読み取れませんでした。もう一度お試しください。');
+                }
+
+                if (!response.ok) {
+                    throw new Error(payload.error || '旅行プランを作成できませんでした。');
+                }
+                const validPlans = Array.isArray(payload.data)
+                    && payload.data.length === days
+                    && payload.data.every((dayPlan) => dayPlan
+                        && typeof dayPlan.day === 'string'
+                        && typeof dayPlan.title === 'string'
+                        && Array.isArray(dayPlan.schedule)
+                        && dayPlan.schedule.length > 0
+                        && dayPlan.schedule.every((item) => typeof item === 'string'));
+                if (!validPlans) {
+                    throw new Error('旅行プランの形式が正しくありません。もう一度お試しください。');
+                }
+
+                renderItinerary(payload.data);
+                document.getElementById('tripSummary').textContent = `${destination} ・ ${days}日間 ・ 予算 ${budget.toLocaleString()}円`;
+                results.hidden = false;
+                results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } catch (error) {
+                errorMessage.textContent = error.message || '通信に失敗しました。時間をおいてもう一度お試しください。';
+                errorMessage.hidden = false;
+            } finally {
+                loading.classList.remove('show');
+                submitButton.disabled = false;
+            }
         }
 
-        loadPages();
+        function renderItinerary(days) {
+            itinerary.replaceChildren();
+
+            days.forEach((dayPlan, index) => {
+                if (!dayPlan || typeof dayPlan !== 'object' || !Array.isArray(dayPlan.schedule)) return;
+
+                const card = document.createElement('article');
+                card.className = 'day-card';
+
+                const dayLabel = document.createElement('p');
+                dayLabel.className = 'day-label';
+                dayLabel.textContent = dayPlan.day || `${index + 1}日目`;
+
+                const title = document.createElement('h3');
+                title.textContent = dayPlan.title || '今日のおすすめ';
+
+                const schedule = document.createElement('ul');
+                schedule.className = 'schedule-list';
+                dayPlan.schedule.forEach((item) => {
+                    const entry = document.createElement('li');
+                    entry.textContent = item;
+                    schedule.appendChild(entry);
+                });
+
+                card.append(dayLabel, title, schedule);
+                itinerary.appendChild(card);
+            });
+
+            if (!itinerary.children.length) {
+                throw new Error('旅行プランの形式が正しくありません。もう一度お試しください。');
+            }
+        }
     </script>
 </body>
 </html>
